@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Residency Budget 2026–2027</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2333;
+    --border: #2a3047;
+    --text: #e8eaf0;
+    --muted: #7a84a0;
+    --green: #4ade80;
+    --green-dim: #16532d;
+    --red: #f87171;
+    --red-dim: #7f1d1d;
+    --yellow: #fbbf24;
+    --yellow-dim: #78350f;
+    --blue: #60a5fa;
+    --blue-dim: #1e3a5f;
+    --purple: #a78bfa;
+    --purple-dim: #3b1f6e;
+    --teal: #2dd4bf;
+    --teal-dim: #134e4a;
+    --orange: #fb923c;
+    --orange-dim: #7c2d12;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0f1117 0%, #1a1f35 50%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 24px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(96,165,250,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 10%;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(74,222,128,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(24px, 5vw, 38px);
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  h1 em { color: var(--green); font-style: italic; }
+  .header-sub {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 300;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 16px; }
+
+  /* CASHFLOW BANNER */
+  .cashflow-bar {
+    margin: 20px 0 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 20px 16px;
+  }
+  .cf-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .cf-item { text-align: center; }
+  .cf-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .cf-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(18px, 4vw, 26px);
+  }
+  .cf-value.green { color: var(--green); }
+  .cf-value.red { color: var(--red); }
+  .cf-value.blue { color: var(--blue); }
+  .cf-value.yellow { color: var(--yellow); }
+
+  /* PROGRESS BAR */
+  .progress-wrap { margin-top: 4px; }
+  .progress-label-row {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .progress-track {
+    height: 10px;
+    background: var(--surface2);
+    border-radius: 999px;
+    overflow: hidden;
+    display: flex;
+  }
+  .p-seg { height: 100%; transition: width 0.4s ease; }
+  .p-seg.savings { background: var(--green); }
+  .p-seg.housing { background: var(--blue); }
+  .p-seg.transport { background: var(--yellow); }
+  .p-seg.food { background: var(--orange); }
+  .p-seg.personal { background: var(--purple); }
+  .p-seg.other { background: var(--teal); }
+  .p-seg.buffer { background: var(--muted); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 8px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .badge-green { background: var(--green-dim); color: var(--green); }
+  .badge-red { background: var(--red-dim); color: var(--red); }
+  .badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
+  .badge-blue { background: var(--blue-dim); color: var(--blue); }
+  .badge-purple { background: var(--purple-dim); color: var(--purple); }
+  .badge-teal { background: var(--teal-dim); color: var(--teal); }
+  .badge-orange { background: var(--orange-dim); color: var(--orange); }
+
+  /* SECTION */
+  .section {
+    margin-top: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .section-header:hover { background: var(--surface2); }
+  .section-title {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; font-size: 14px;
+  }
+  .section-emoji { font-size: 18px; }
+  .section-total {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .chevron { font-size: 12px; color: var(--muted); transition: transform 0.2s; }
+  .chevron.open { transform: rotate(180deg); }
+  .section-body { display: none; }
+  .section-body.open { display: block; }
+
+  /* ROWS */
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: var(--surface2); }
+  .row-label { font-size: 13px; }
+  .row-note { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .row-amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* INPUTS */
+  .input-wrap { display: flex; align-items: center; gap: 4px; }
+  .dollar-prefix {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  input[type="number"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 4px 8px;
+    width: 90px;
+    text-align: right;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="number"]:focus { border-color: var(--blue); }
+  input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
+
+  /* STIPEND NOTICE */
+  .notice {
+    margin: 16px 20px;
+    padding: 12px 14px;
+    background: var(--blue-dim);
+    border: 1px solid rgba(96,165,250,0.3);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--blue);
+    line-height: 1.5;
+  }
+  .notice strong { font-weight: 600; }
+
+  /* PLACEHOLDER WARNING */
+  .placeholder-warn {
+    margin: 16px 20px;
+    padding: 12px 14px;
+    background: var(--yellow-dim);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--yellow);
+    line-height: 1.5;
+  }
+
+  /* RETIREMENT SECTION */
+  .ret-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 16px 20px;
+  }
+  .ret-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .ret-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .ret-card-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+  .ret-card-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+  /* RENT VS BUY */
+  .rvb-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  .rvb-tab {
+    flex: 1;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+  .rvb-tab.active-rent { border-color: var(--teal); color: var(--teal); }
+  .rvb-tab.active-buy  { border-color: var(--orange); color: var(--orange); }
+  .rvb-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 16px 20px;
+  }
+  .rvb-input-group {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .rvb-input-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .rvb-input-wrap { display: flex; align-items: center; gap: 4px; }
+  .rvb-input-wrap input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 5px 8px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .rvb-input-wrap input:focus { border-color: var(--blue); }
+  .rvb-input-wrap input::-webkit-inner-spin-button { opacity: 0.4; }
+  .rvb-prefix { font-family:'DM Mono',monospace; font-size:13px; color:var(--muted); flex-shrink:0; }
+  .rvb-suffix { font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); flex-shrink:0; }
+
+  .rvb-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+  .rvb-col {
+    padding: 16px 18px;
+  }
+  .rvb-col:first-child { border-right: 1px solid var(--border); }
+  .rvb-col-title {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .rvb-col-title.rent { color: var(--teal); }
+  .rvb-col-title.buy  { color: var(--orange); }
+  .rvb-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 12px;
+    margin-bottom: 7px;
+    gap: 6px;
+  }
+  .rvb-line-label { color: var(--muted); flex: 1; }
+  .rvb-line-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .rvb-total {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .rvb-total .rvb-total-val { font-family: 'DM Mono', monospace; }
+  .rvb-total.rent .rvb-total-val { color: var(--teal); }
+  .rvb-total.buy  .rvb-total-val { color: var(--orange); }
+
+  .rvb-verdict {
+    margin: 0 20px 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .rvb-verdict strong { display: block; font-size: 13px; margin-bottom: 4px; }
+  .rvb-verdict.warn { background: var(--red-dim); border: 1px solid rgba(248,113,113,0.3); color: var(--red); }
+  .rvb-verdict.caution { background: var(--yellow-dim); border: 1px solid rgba(251,191,36,0.3); color: var(--yellow); }
+  .rvb-verdict.ok { background: var(--green-dim); border: 1px solid rgba(74,222,128,0.3); color: var(--green); }
+
+  .rvb-breakeven {
+    margin: 0 20px 16px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .rvb-breakeven strong { color: var(--text); }
+
+  .rvb-pct-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .rvb-pct-item { display: flex; align-items: center; gap: 8px; }
+  .rvb-pct-label { color: var(--muted); }
+  .rvb-pct-val { font-family: 'DM Mono', monospace; font-weight: 600; }
+  .pct-warn { color: var(--red); }
+  .pct-ok   { color: var(--green); }
+  .pct-caut { color: var(--yellow); }
+
+  @media (max-width: 480px) {
+    .rvb-inputs { grid-template-columns: 1fr; }
+    .rvb-compare { grid-template-columns: 1fr; }
+    .rvb-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  /* YNAB TIP */
+  .ynab-tip {
+    margin: 20px 0 0;
+    background: linear-gradient(135deg, #1e2333 0%, #1a2040 100%);
+    border: 1px solid rgba(96,165,250,0.2);
+    border-radius: 16px;
+    padding: 18px 20px;
+  }
+  .ynab-tip-title {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--blue);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ynab-tip p { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 6px; }
+  .ynab-tip p:last-child { margin-bottom: 0; }
+  .ynab-tip strong { color: var(--text); }
+
+  /* ANNUAL SUMMARY */
+  .annual-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 16px 20px;
+  }
+  .ann-item {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .ann-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .ann-value { font-family: 'DM Mono', monospace; font-size: 15px; }
+  .ann-value.pos { color: var(--green); }
+  .ann-value.neg { color: var(--red); }
+  .ann-value.neu { color: var(--blue); }
+
+  /* MOBILE */
+  @media (max-width: 480px) {
+    .cf-grid { grid-template-columns: 1fr 1fr; }
+    .ret-grid { grid-template-columns: 1fr; }
+    .annual-grid { grid-template-columns: 1fr; }
+    input[type="number"] { width: 75px; }
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 20px;
+  }
+
+  .fixed-note {
+    font-size: 11px;
+    color: var(--teal);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .total-row {
+    background: var(--surface2);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+  .total-row .total-val {
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-label">💊 Residency Budget Dashboard</div>
+    <h1>July 2026 — June 2027<br><em>Marshfield, WI</em></h1>
+    <div class="header-sub">PGY-1 · $71,000 salary · Marshfield Medical Center · Wisconsin 🧀</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- CASHFLOW BANNER -->
+  <div class="cashflow-bar">
+    <div class="cf-grid">
+      <div class="cf-item">
+        <div class="cf-label">Take-Home / mo</div>
+        <div class="cf-value blue" id="takeHomeMo">—</div>
+      </div>
+      <div class="cf-item">
+        <div class="cf-label">Total Expenses / mo</div>
+        <div class="cf-value yellow" id="expensesMo">—</div>
+      </div>
+      <div class="cf-item">
+        <div class="cf-label">Monthly Buffer 💚</div>
+        <div class="cf-value green" id="bufferMo">—</div>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label-row">
+        <span>Monthly allocation of take-home pay</span>
+        <span id="pctSpent">—</span>
+      </div>
+      <div class="progress-track">
+        <div class="p-seg savings" id="p-savings" style="width:0%"></div>
+        <div class="p-seg housing" id="p-housing" style="width:0%"></div>
+        <div class="p-seg food" id="p-food" style="width:0%"></div>
+        <div class="p-seg transport" id="p-transport" style="width:0%"></div>
+        <div class="p-seg personal" id="p-personal" style="width:0%"></div>
+        <div class="p-seg other" id="p-other" style="width:0%"></div>
+        <div class="p-seg buffer" id="p-buffer" style="width:0%"></div>
+      </div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div>Roth IRA</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div>Housing</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--orange)"></div>Food</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--yellow)"></div>Transport</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--purple)"></div>Personal</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--teal)"></div>Other</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--muted)"></div>Buffer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INCOME & DEDUCTIONS (fixed, not editable) -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('income')">
+      <div class="section-title"><span class="section-emoji">💵</span> Gross Income & Payroll Deductions</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-total" id="incomeTotal">—</span>
+        <span class="chevron" id="chevron-income">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-income">
+      <div class="notice">
+        <strong>📌 These are calculated automatically</strong> from your $71k salary. Taxes estimated for Wisconsin single filer (fed ~14% effective + WI ~4.5% effective + FICA 7.65%). Update your actual health insurance premium below!
+      </div>
+      <div class="row">
+        <div><div class="row-label">Gross Annual Salary</div></div>
+        <div></div>
+        <div class="row-amount">$71,000 / yr</div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">401k Contribution (6% pretax)</div><div class="row-note">Reduces taxable income</div></div>
+        <span class="badge badge-green">PRETAX</span>
+        <div class="row-amount">−$355 / mo</div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Federal Income Tax</div><div class="row-note">~14% effective rate, single filer</div></div>
+        <span class="badge badge-red">TAX</span>
+        <div class="row-amount">−$682 / mo</div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Wisconsin State Income Tax</div><div class="row-note">~4.5% effective rate</div></div>
+        <span class="badge badge-red">TAX</span>
+        <div class="row-amount">−$222 / mo</div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">FICA (SS + Medicare)</div><div class="row-note">7.65% of gross</div></div>
+        <span class="badge badge-red">TAX</span>
+        <div class="row-amount">−$453 / mo</div>
+      </div>
+      <div class="row">
+        <div>
+          <div class="row-label">Health Insurance Premium</div>
+          <div class="row-note" style="color:var(--yellow)">⚠️ Placeholder — update when you get your actual premium from HR!</div>
+        </div>
+        <span class="badge badge-yellow">BENEFITS</span>
+        <div class="input-wrap">
+          <span class="dollar-prefix">$</span>
+          <input type="number" id="healthPremium" value="133" min="0" max="500" onchange="recalc()" oninput="recalc()">
+        </div>
+      </div>
+      <div class="total-row">
+        <span>💰 Estimated Monthly Take-Home</span>
+        <span class="total-val" id="takeHomeCalc">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETIREMENT -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('retire')">
+      <div class="section-title"><span class="section-emoji">🌱</span> Retirement Savings</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-total" id="retireTotal">—</span>
+        <span class="chevron" id="chevron-retire">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-retire">
+      <div class="ret-grid">
+        <div class="ret-card">
+          <div class="ret-card-label">🏦 401k — Your 6%</div>
+          <div class="ret-card-value">$4,260</div>
+          <div class="ret-card-sub">$355/mo pretax<br>Reduces your taxable income</div>
+        </div>
+        <div class="ret-card">
+          <div class="ret-card-label">🎁 Employer Match — 5%</div>
+          <div class="ret-card-value">$3,550</div>
+          <div class="ret-card-sub">$296/mo FREE money<br>Vesting schedule may apply</div>
+        </div>
+        <div class="ret-card">
+          <div class="ret-card-label">🌟 Total 401k / yr</div>
+          <div class="ret-card-value">$7,810</div>
+          <div class="ret-card-sub">11% of salary going to 401k<br>Great foundation!</div>
+        </div>
+        <div class="ret-card">
+          <div class="ret-card-label">💜 Roth IRA (post-tax)</div>
+          <div class="ret-card-value" id="rothCardVal">$3,500</div>
+          <div class="ret-card-sub" id="rothCardSub">$0/mo Jul–Dec 2026<br>$583/mo from Jan 2027</div>
+        </div>
+      </div>
+      <div class="placeholder-warn" style="margin:0 20px 16px; padding:12px 14px; background:var(--yellow-dim); border:1px solid rgba(251,191,36,0.3); border-radius:10px; font-size:12px; color:var(--yellow); line-height:1.5;">
+        <strong>⏸️ Roth IRA paused Jul–Dec 2026</strong> to improve cash flow while laser hair removal and all debt payments are active. Resumes Jan 2027 when laser drops off. <strong>Cost: ~$3,498 in missed contributions (worth ~$26,600 at retirement @ 7%).</strong> Toggle below to compare scenarios.
+      </div>
+      <div class="notice">
+        <strong>💡 Roth IRA Strategy for Residents:</strong> Even with the pause, Jan 2027 onward you'll max the full $7,000/yr. These are still among the best Roth years of your career — lowest tax rate before attending income hits!
+      </div>
+      <div class="row">
+        <div><div class="row-label">Roth IRA Monthly Contribution</div><div class="row-note" id="rothNote" style="color:var(--yellow)">⏸️ Paused Jul–Dec 2026 · Resumes $583/mo Jan 2027</div></div>
+        <span class="badge badge-purple">ROTH</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="rothMo" value="0" min="0" max="583" onchange="recalc()" oninput="recalc()" placeholder="0–583"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOUSING -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('housing')">
+      <div class="section-title"><span class="section-emoji">🏠</span> Housing</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-total" id="housingTotal">—</span>
+        <span class="chevron" id="chevron-housing">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-housing">
+      <div class="notice" style="background:var(--surface2);border-color:var(--border);color:var(--muted)">
+        🧀 Marshfield, WI avg 1BR: ~$823/mo. You can find nice 1BR apartments for $750–900. The cost of living is 13% below national average — great for a resident!
+      </div>
+      <div class="row">
+        <div><div class="row-label">Rent</div><div class="row-note">Your actual rent — $1,300/mo</div></div>
+        <span class="badge badge-blue">HOUSING</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="rent" value="1300" min="0" max="3000" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Renters Insurance</div><div class="row-note">Highly recommended — cheap in WI</div></div>
+        <span class="badge badge-blue">HOUSING</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="renters" value="15" min="0" max="100" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Utilities (electric, heat, water)</div><div class="row-note">WI winters are real — heat adds up in winter!</div></div>
+        <span class="badge badge-blue">HOUSING</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="utilities" value="120" min="0" max="400" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Internet</div><div class="row-note"></div></div>
+        <span class="badge badge-blue">HOUSING</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="internet" value="60" min="0" max="200" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOD -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('food')">
+      <div class="section-title"><span class="section-emoji">🍽️</span> Food</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-total" id="foodTotal">—</span>
+        <span class="chevron" id="chevron-food">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-food">
+      <div class="notice" style="background:var(--teal-dim);border-color:rgba(45,212,191,0.3);color:var(--teal)">
+        <strong>🎉 You have a $1,250 food stipend!</strong> That's ~$104/mo in extra money for food. Consider using YNAB's "Ready to Assign" to allocate this when it arrives — it can offset your grocery budget significantly.
+      </div>
+      <div class="row">
+        <div><div class="row-label">Groceries</div><div class="row-note">WI groceries run ~3% below national avg</div></div>
+        <span class="badge badge-orange">FOOD</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="groceries" value="300" min="0" max="800" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Dining Out / Takeout</div><div class="row-note">You'll be exhausted — budget for this guilt-free</div></div>
+        <span class="badge badge-orange">FOOD</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="dining" value="150" min="0" max="500" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Coffee ☕</div><div class="row-note">Essential during residency, no shame</div></div>
+        <span class="badge badge-orange">FOOD</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="coffee" value="40" min="0" max="200" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSPORT -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('transport')">
+      <div class="section-title"><span class="section-emoji">🚗</span> Transportation</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-total" id="transportTotal">—</span>
+        <span class="chevron" id="chevron-transport">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-transport">
+      <div class="row">
+        <div><div class="row-label">Gas</div><div class="row-note">WI avg ~$2.86/gal — 11% below national avg</div></div>
+        <span class="badge badge-yellow">TRANSPORT</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="gas" value="80" min="0" max="300" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Auto Insurance</div><div class="row-note">WI avg ~$73/mo — well below national avg</div></div>
+        <span class="badge badge-yellow">TRANSPORT</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="carInsurance" value="73" min="0" max="300" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Car Maintenance & Registration</div><div class="row-note">Oil changes, tires, tabs — averaged monthly</div></div>
+        <span class="badge badge-yellow">TRANSPORT</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="carMaint" value="50" min="0" max="300" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSONAL / SUBSCRIPTIONS -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('personal')">
+      <div class="section-title"><span class="section-emoji">📱</span> Personal & Subscriptions</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-total" id="personalTotal">—</span>
+        <span class="chevron" id="chevron-personal">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-personal">
+      <div class="notice">
+        <strong>💡 YNAB tip:</strong> You have a $1,750 technology stipend! Use it for your laptop, iPad, medical apps (UpToDate, Epocrates), YNAB subscription, and any tech gear. Track it as a lump-sum inflow in YNAB when it arrives.
+      </div>
+      <div class="row">
+        <div><div class="row-label">Phone</div><div class="row-note"></div></div>
+        <span class="badge badge-purple">PERSONAL</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="phone" value="60" min="0" max="200" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Streaming (Netflix, Spotify, etc.)</div></div>
+        <span class="badge badge-purple">PERSONAL</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="streaming" value="30" min="0" max="100" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">YNAB Subscription</div><div class="row-note">~$15/mo — could use tech stipend</div></div>
+        <span class="badge badge-purple">PERSONAL</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="ynab" value="15" min="0" max="30" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Gym / Fitness</div></div>
+        <span class="badge badge-purple">PERSONAL</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="gym" value="30" min="0" max="200" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Clothing & Personal Care</div></div>
+        <span class="badge badge-purple">PERSONAL</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="clothing" value="50" min="0" max="300" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Entertainment / Hobbies</div><div class="row-note">Fun money — protect this during residency!</div></div>
+        <span class="badge badge-purple">PERSONAL</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="fun" value="100" min="0" max="500" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SINKING FUNDS & SAVINGS -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('sinking')">
+      <div class="section-title"><span class="section-emoji">🏦</span> Sinking Funds & Emergency Savings</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-total" id="sinkingTotal">—</span>
+        <span class="chevron" id="chevron-sinking">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-sinking">
+      <div class="notice">
+        <strong>💡 YNAB Sinking Fund Strategy:</strong> Create these as categories in YNAB and fund them monthly. When the expense hits, you'll already have the money. These aren't "extra" — they're real costs averaged over time.
+      </div>
+      <div class="row">
+        <div><div class="row-label">Emergency Fund Build</div><div class="row-note">Goal: 3–6 months expenses (~$10–15k). WI + residency = high priority!</div></div>
+        <span class="badge badge-teal">SAVINGS</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="emergency" value="200" min="0" max="1000" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Annual Medical Expenses / Dental Out-of-Pocket</div><div class="row-note">Even with coverage, copays add up</div></div>
+        <span class="badge badge-teal">SAVINGS</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="medical" value="50" min="0" max="300" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Travel / Vacation</div><div class="row-note">You will need a vacation. Budget for it!</div></div>
+        <span class="badge badge-teal">SAVINGS</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="travel" value="100" min="0" max="500" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">USMLE Step 3 / Board Fees</div><div class="row-note">~$1,000 total — save ~$80/mo to have it ready</div></div>
+        <span class="badge badge-teal">SAVINGS</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="boards" value="80" min="0" max="200" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div><div class="row-label">Gifts / Holidays</div></div>
+        <span class="badge badge-teal">SAVINGS</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="gifts" value="40" min="0" max="200" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEBT OBLIGATIONS -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('debt')">
+      <div class="section-title"><span class="section-emoji">💳</span> Debt Obligations</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="section-total" id="debtTotal">—</span>
+        <span class="chevron" id="chevron-debt">▼</span>
+      </div>
+    </div>
+    <div class="section-body open" id="body-debt">
+      <div class="placeholder-warn" style="margin:16px 20px; padding:12px 14px; background:var(--red-dim); border:1px solid rgba(248,113,113,0.3); border-radius:10px; font-size:12px; color:var(--red); line-height:1.5;">
+        <strong>🚨 401k Loan Warning:</strong> If you leave Marshfield for derm residency, your remaining 401k loan balance becomes due in full within ~60–90 days — or it's treated as a taxable distribution + 10% early withdrawal penalty. Know your remaining balance and plan accordingly!
+      </div>
+      <div class="row">
+        <div>
+          <div class="row-label">Advia Loan Payment</div>
+          <div class="row-note">Personal loan payoff</div>
+        </div>
+        <span class="badge badge-red">DEBT</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="debtAdvia" value="750" min="0" max="2000" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div>
+          <div class="row-label">Walgreens Loan Payment</div>
+          <div class="row-note">Personal loan payoff</div>
+        </div>
+        <span class="badge badge-red">DEBT</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="debtWalgreens" value="250" min="0" max="2000" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div>
+          <div class="row-label">401k Loan ($86 biweekly)</div>
+          <div class="row-note">$86 × 26 periods ÷ 12 = $186.67/mo</div>
+        </div>
+        <span class="badge badge-red">DEBT</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="debt401k" value="187" min="0" max="500" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="row">
+        <div>
+          <div class="row-label">Laser Hair Removal 💈</div>
+          <div class="row-note" style="color:var(--yellow)">⏳ Temporary — expires Dec 2026 (6 months into residency)</div>
+        </div>
+        <span class="badge badge-yellow">TEMP</span>
+        <div class="input-wrap"><span class="dollar-prefix">$</span><input type="number" id="debtLaser" value="240" min="0" max="500" onchange="recalc()" oninput="recalc()"></div>
+      </div>
+      <div class="notice" style="margin:0 0 0; border-radius:0 0 10px 10px;">
+        <strong>💡 After Dec 2026:</strong> The $240/mo laser payment drops off, freeing up $2,880/yr. Consider redirecting it to your emergency fund or increasing Roth IRA contributions!
+      </div>
+    </div>
+  </div>
+
+  <!-- ANNUAL SUMMARY -->
+  <div class="section">
+    <div class="section-header" onclick="toggle('annual')">
+      <div class="section-title"><span class="section-emoji">📊</span> Annual Summary</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="chevron" id="chevron-annual">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-annual">
+      <div class="annual-grid">
+        <div class="ann-item">
+          <div class="ann-label">💰 Gross Salary</div>
+          <div class="ann-value neu">$71,000</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">🏦 401k (yours)</div>
+          <div class="ann-value neu">$4,260</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">🎁 Employer 401k</div>
+          <div class="ann-value pos">$3,550</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">🌱 Roth IRA</div>
+          <div class="ann-value pos">$7,000</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">💸 Total Taxes Paid</div>
+          <div class="ann-value neg" id="annTax">—</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">🏠 Annual Expenses</div>
+          <div class="ann-value neg" id="annExp">—</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">🎉 Tech Stipend</div>
+          <div class="ann-value pos">$1,750</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">🍕 Food Stipend</div>
+          <div class="ann-value pos">$1,250</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">🚛 Relocation (one-time)</div>
+          <div class="ann-value pos">$2,500</div>
+        </div>
+        <div class="ann-item">
+          <div class="ann-label">📈 Net Annual Buffer</div>
+          <div class="ann-value pos" id="annBuffer">—</div>
+        </div>
+        <div class="ann-item" style="grid-column: 1/-1; background: var(--green-dim); border: 1px solid rgba(74,222,128,0.2)">
+          <div class="ann-label" style="color:var(--green)">🌟 Total Retirement Contributions (yr 1)</div>
+          <div class="ann-value" style="color:var(--green); font-size:20px">$14,810</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RENT VS BUY -->
+  <div class="section" style="margin-top:20px">
+    <div class="section-header" onclick="toggle('rvb')">
+      <div class="section-title"><span class="section-emoji">🏡</span> Rent vs. Buy Calculator</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="badge badge-orange">NEW</span>
+        <span class="chevron" id="chevron-rvb">▼</span>
+      </div>
+    </div>
+    <div class="section-body open" id="body-rvb">
+
+      <!-- INPUTS GRID -->
+      <div class="rvb-inputs">
+        <div class="rvb-input-group">
+          <div class="rvb-input-label">🏠 Home Purchase Price</div>
+          <div class="rvb-input-wrap"><span class="rvb-prefix">$</span><input type="number" id="rvbPrice" value="275000" min="100000" max="800000" oninput="rvbCalc()"></div>
+        </div>
+        <div class="rvb-input-group">
+          <div class="rvb-input-label">💰 Down Payment</div>
+          <div class="rvb-input-wrap"><span class="rvb-prefix">$</span><input type="number" id="rvbDown" value="55000" min="0" max="300000" oninput="rvbCalc()"></div>
+        </div>
+        <div class="rvb-input-group">
+          <div class="rvb-input-label">📈 Mortgage Rate (30yr fixed)</div>
+          <div class="rvb-input-wrap"><input type="number" id="rvbRate" value="6.75" min="3" max="12" step="0.05" oninput="rvbCalc()"><span class="rvb-suffix">%</span></div>
+        </div>
+        <div class="rvb-input-group">
+          <div class="rvb-input-label">🏛️ Property Tax Rate (Wood Co.)</div>
+          <div class="rvb-input-wrap"><input type="number" id="rvbTaxRate" value="1.82" min="0.5" max="4" step="0.01" oninput="rvbCalc()"><span class="rvb-suffix">%</span></div>
+        </div>
+        <div class="rvb-input-group">
+          <div class="rvb-input-label">🏡 Homeowners Insurance / yr</div>
+          <div class="rvb-input-wrap"><span class="rvb-prefix">$</span><input type="number" id="rvbInsurance" value="1200" min="500" max="5000" oninput="rvbCalc()"></div>
+        </div>
+        <div class="rvb-input-group">
+          <div class="rvb-input-label">🔧 Maintenance Budget / yr</div>
+          <div class="rvb-input-wrap"><span class="rvb-prefix">$</span><input type="number" id="rvbMaint" value="2000" min="0" max="10000" oninput="rvbCalc()"></div>
+        </div>
+        <div class="rvb-input-group">
+          <div class="rvb-input-label">🏢 Monthly Rent (alternative)</div>
+          <div class="rvb-input-wrap"><span class="rvb-prefix">$</span><input type="number" id="rvbRent" value="1300" min="400" max="3000" oninput="rvbCalc()"></div>
+        </div>
+        <div class="rvb-input-group">
+          <div class="rvb-input-label">📅 Years Until Selling / Moving</div>
+          <div class="rvb-input-wrap"><input type="number" id="rvbYears" value="3" min="1" max="10" step="1" oninput="rvbCalc()"><span class="rvb-suffix">yrs</span></div>
+        </div>
+      </div>
+
+      <!-- SIDE BY SIDE MONTHLY -->
+      <div class="rvb-compare">
+        <div class="rvb-col">
+          <div class="rvb-col-title rent">🏢 Renting</div>
+          <div class="rvb-line"><span class="rvb-line-label">Rent</span><span class="rvb-line-val" id="r-rent">—</span></div>
+          <div class="rvb-line"><span class="rvb-line-label">Renters insurance</span><span class="rvb-line-val">$15</span></div>
+          <div class="rvb-line"><span class="rvb-line-label">Utilities est.</span><span class="rvb-line-val" id="r-util">$120</span></div>
+          <div class="rvb-line"><span class="rvb-line-label">Opportunity cost*</span><span class="rvb-line-val" id="r-opp">—</span></div>
+          <div class="rvb-total rent">
+            <span>Monthly Total</span>
+            <span class="rvb-total-val" id="r-total">—</span>
+          </div>
+        </div>
+        <div class="rvb-col">
+          <div class="rvb-col-title buy">🏠 Buying</div>
+          <div class="rvb-line"><span class="rvb-line-label">Principal & Interest</span><span class="rvb-line-val" id="b-pi">—</span></div>
+          <div class="rvb-line"><span class="rvb-line-label">Property tax</span><span class="rvb-line-val" id="b-tax">—</span></div>
+          <div class="rvb-line"><span class="rvb-line-label">Homeowners insurance</span><span class="rvb-line-val" id="b-ins">—</span></div>
+          <div class="rvb-line"><span class="rvb-line-label">PMI (if &lt;20% down)</span><span class="rvb-line-val" id="b-pmi">—</span></div>
+          <div class="rvb-line"><span class="rvb-line-label">Utilities</span><span class="rvb-line-val">$150</span></div>
+          <div class="rvb-line"><span class="rvb-line-label">Maintenance sinking fund</span><span class="rvb-line-val" id="b-maint">—</span></div>
+          <div class="rvb-total buy" style="margin-bottom:8px">
+            <span>Gross Monthly Total</span>
+            <span class="rvb-total-val" id="b-total">—</span>
+          </div>
+          <div class="rvb-line" style="color:var(--green)"><span class="rvb-line-label" style="color:var(--green)">📈 $47k invested @ 7%/yr</span><span class="rvb-line-val" style="color:var(--green)" id="b-inv-gain">−$276</span></div>
+          <div style="padding:8px 0 0; border-top: 1px dashed var(--border); margin-top:4px; display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
+            <span>✅ Net Effective Cost</span>
+            <span style="font-family:'DM Mono',monospace; color:var(--teal)" id="b-net">—</span>
+          </div>
+          <div style="font-size:10px; color:var(--muted); margin-top:4px;">*Gain is unrealized — actual cash outflow is the gross total</div>
+        </div>
+      </div>
+
+      <!-- % OF TAKE HOME -->
+      <div class="rvb-pct-row">
+        <div class="rvb-pct-item">
+          <span class="rvb-pct-label">🏢 Rent as % of take-home:</span>
+          <span class="rvb-pct-val" id="r-pct">—</span>
+        </div>
+        <div class="rvb-pct-item">
+          <span class="rvb-pct-label">🏠 Buy as % of take-home:</span>
+          <span class="rvb-pct-val" id="b-pct">—</span>
+        </div>
+      </div>
+
+      <!-- BREAKEVEN / LONG TERM -->
+      <div class="rvb-breakeven" id="rvb-breakeven">—</div>
+
+      <!-- VERDICT -->
+      <div class="rvb-verdict" id="rvb-verdict">—</div>
+
+    </div>
+  </div>
+
+  <!-- YNAB TIP -->
+  <div class="ynab-tip">
+    <div class="ynab-tip-title">💜 YNAB Setup Tips for Residency</div>
+    <p><strong>Categories to create:</strong> Make separate categories for each sinking fund above. Set targets on each so YNAB reminds you if you're underfunding them.</p>
+    <p><strong>Stipends:</strong> When your tech ($1,750), food ($1,250), or relocation ($2,500) stipends arrive, treat them as income in YNAB and immediately assign them to relevant categories — don't let them sit unassigned!</p>
+    <p><strong>Useful YNAB report:</strong> Pull a <strong>"Spending Totals"</strong> report from your current budget (last 3–6 months) filtered by category group. This will let us validate these estimates against your real spending patterns. Export as CSV and share!</p>
+    <p><strong>Paycheck template:</strong> Since residents get paid bi-weekly or semi-monthly, set up a paycheck transaction template. Your Roth IRA contribution should come out right after each paycheck — automate it at your brokerage!</p>
+  </div>
+
+</div>
+
+<script>
+const GROSS = 71000;
+const GROSS_MO = GROSS / 12;
+const K401_YOURS_MO = GROSS * 0.06 / 12;
+const FED_TAX_MO = 682;
+const WI_TAX_MO = 222;
+const FICA_MO = 453;
+
+function recalc() {
+  const healthPremium = val('healthPremium');
+  const rothMo = val('rothMo'); // now editable — 0 during pause, 583 when active
+  const takeHome = GROSS_MO - K401_YOURS_MO - FED_TAX_MO - WI_TAX_MO - FICA_MO - healthPremium;
+
+  // Housing
+  const housingSum = val('rent') + val('renters') + val('utilities') + val('internet');
+  // Food
+  const foodSum = val('groceries') + val('dining') + val('coffee');
+  // Transport
+  const transportSum = val('gas') + val('carInsurance') + val('carMaint');
+  // Personal
+  const personalSum = val('phone') + val('streaming') + val('ynab') + val('gym') + val('clothing') + val('fun');
+  // Sinking
+  const sinkingSum = val('emergency') + val('medical') + val('travel') + val('boards') + val('gifts');
+  // Debt
+  const debtSum = val('debtAdvia') + val('debtWalgreens') + val('debt401k') + val('debtLaser');
+  // Total outgoing (Roth + all expenses)
+  const totalOut = rothMo + housingSum + foodSum + transportSum + personalSum + sinkingSum + debtSum;
+  const buffer = takeHome - totalOut;
+
+  // Update totals
+  setText('takeHomeMo', fmt(takeHome));
+  setText('expensesMo', fmt(totalOut));
+  setText('bufferMo', fmt(buffer));
+  setText('takeHomeCalc', fmt(takeHome) + ' / mo');
+  setText('incomeTotal', fmt(takeHome) + ' take-home');
+  setText('retireTotal', '$' + (7000 + 4260 + 3550).toLocaleString() + ' / yr total');
+  setText('housingTotal', fmt(housingSum) + ' / mo');
+  setText('foodTotal', fmt(foodSum) + ' / mo');
+  setText('transportTotal', fmt(transportSum) + ' / mo');
+  setText('personalTotal', fmt(personalSum) + ' / mo');
+  setText('sinkingTotal', fmt(sinkingSum) + ' / mo');
+  setText('debtTotal', fmt(debtSum) + ' / mo');
+
+  // Progress bar
+  const th = takeHome > 0 ? takeHome : 1;
+  setPct('p-savings', rothMo / th * 100);
+  setPct('p-housing', housingSum / th * 100);
+  setPct('p-food', foodSum / th * 100);
+  setPct('p-transport', transportSum / th * 100);
+  setPct('p-personal', personalSum / th * 100);
+  setPct('p-other', sinkingSum / th * 100);
+  const bufPct = Math.max(0, buffer / th * 100);
+  setPct('p-buffer', bufPct);
+
+  const pct = Math.round(totalOut / th * 100);
+  setText('pctSpent', pct + '% allocated');
+
+  // Buffer color
+  const bufEl = document.getElementById('bufferMo');
+  bufEl.className = 'cf-value ' + (buffer >= 0 ? 'green' : 'red');
+
+  // Annual summary
+  const annTax = (FED_TAX_MO + WI_TAX_MO + FICA_MO) * 12;
+  const annExp = totalOut * 12;
+  const annBuf = buffer * 12;
+  setText('annTax', '$' + annTax.toLocaleString());
+  setText('annExp', '$' + Math.round(annExp).toLocaleString());
+  setText('annBuffer', '$' + Math.round(annBuf).toLocaleString());
+}
+
+function val(id) {
+  return parseFloat(document.getElementById(id).value) || 0;
+}
+function fmt(n) {
+  const abs = Math.abs(Math.round(n));
+  return (n < 0 ? '−$' : '$') + abs.toLocaleString();
+}
+function setText(id, t) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = t;
+}
+function setPct(id, pct) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = Math.min(100, Math.max(0, pct)) + '%';
+}
+
+function toggle(name) {
+  const body = document.getElementById('body-' + name);
+  const chevron = document.getElementById('chevron-' + name);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (chevron) chevron.classList.toggle('open', !isOpen);
+}
+
+// Open key sections by default
+['income','retire','housing','debt','rvb'].forEach(s => {
+  const b = document.getElementById('body-' + s);
+  const ch = document.getElementById('chevron-' + s);
+  if (b) b.classList.add('open');
+  if (ch) ch.classList.add('open');
+});
+
+// ---- RENT VS BUY CALCULATOR ----
+function rvbCalc() {
+  const price    = parseFloat(document.getElementById('rvbPrice').value)    || 275000;
+  const down     = parseFloat(document.getElementById('rvbDown').value)     || 55000;
+  const ratePct  = parseFloat(document.getElementById('rvbRate').value)     || 6.75;
+  const taxRate  = parseFloat(document.getElementById('rvbTaxRate').value)  || 1.82;
+  const insAnn   = parseFloat(document.getElementById('rvbInsurance').value)|| 1200;
+  const maintAnn = parseFloat(document.getElementById('rvbMaint').value)    || 2000;
+  const rentAmt  = parseFloat(document.getElementById('rvbRent').value)     || 850;
+  const years    = parseFloat(document.getElementById('rvbYears').value)    || 3;
+
+  const loan     = price - down;
+  const monthlyRate = (ratePct / 100) / 12;
+  const n        = 360; // 30yr
+  const pi       = loan * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+  const propTaxMo = (price * taxRate / 100) / 12;
+  const insMo    = insAnn / 12;
+  const maintMo  = maintAnn / 12;
+  const downPct  = down / price;
+  const pmi      = downPct < 0.20 ? (loan * 0.0075 / 12) : 0; // ~0.75%/yr
+
+  const buyUtilities = 150;
+  const buyTotal = pi + propTaxMo + insMo + pmi + maintMo + buyUtilities;
+
+  // $47k invested opportunity gain (always shown regardless of down payment)
+  const investedProceeds = 47915;
+  const invGainMo = (investedProceeds * 0.07) / 12; // ~$279/mo
+  const buyNetEffective = buyTotal - invGainMo;
+
+  // Opportunity cost: what the down payment could earn in a HYSA/index fund (~6%/yr)
+  const oppCostMo = (down * 0.06) / 12;
+  const rentTotal = rentAmt + 15 + 120 + oppCostMo; // rent + renters ins + utilities + opp cost
+
+  // Take-home (rough — use 3800 as baseline since health premium unknown)
+  const healthPremium = parseFloat(document.getElementById('healthPremium').value) || 133;
+  const GROSS_MO = 71000 / 12;
+  const takeHome = GROSS_MO - (71000*0.06/12) - 682 - 222 - 453 - healthPremium;
+
+  const rPct = Math.round(rentTotal / takeHome * 100);
+  const bPct = Math.round(buyTotal / takeHome * 100);
+
+  // Update DOM
+  setText('r-rent',  fmt(rentAmt));
+  setText('r-opp',   fmt(oppCostMo) + '/mo');
+  setText('r-total', fmt(rentTotal));
+  setText('b-pi',    fmt(pi));
+  setText('b-tax',   fmt(propTaxMo));
+  setText('b-ins',   fmt(insMo));
+  setText('b-pmi',   pmi > 0 ? fmt(pmi) : '—');
+  setText('b-maint', fmt(maintMo));
+  setText('b-total', fmt(buyTotal));
+  setText('b-inv-gain', '−' + fmt(invGainMo));
+  setText('b-net',   fmt(buyNetEffective));
+
+  const rPctEl = document.getElementById('r-pct');
+  const bPctEl = document.getElementById('b-pct');
+  rPctEl.textContent = rPct + '%';
+  bPctEl.textContent = bPct + '%';
+  rPctEl.className = 'rvb-pct-val ' + (rPct <= 30 ? 'pct-ok' : rPct <= 38 ? 'pct-caut' : 'pct-warn');
+  bPctEl.className = 'rvb-pct-val ' + (bPct <= 30 ? 'pct-ok' : bPct <= 38 ? 'pct-caut' : 'pct-warn');
+
+  // Long-term analysis
+  const appRate = 0.04; // 4% annual appreciation (conservative WI)
+  const futureValue = price * Math.pow(1 + appRate, years);
+  const sellingCosts = futureValue * 0.07; // 6% agent + 1% closing
+  const proceeds = futureValue - sellingCosts;
+
+  // Equity built: principal paid down over N years
+  let bal = loan;
+  let principalPaid = 0;
+  for (let m = 0; m < years * 12; m++) {
+    const interest = bal * monthlyRate;
+    const principal = pi - interest;
+    principalPaid += principal;
+    bal -= principal;
+  }
+  const equity = down + principalPaid;
+  const netSaleProceeds = proceeds - bal;
+  const netGainBuy = netSaleProceeds - down; // what you get back vs what you put in
+
+  // Renting: down payment invested at 6%
+  const investedDown = down * Math.pow(1.06, years);
+  const rentNetGain = investedDown - down; // gain from investment
+
+  // Total cost comparison over N years
+  const totalRentCost = (rentAmt + 15 + 120) * 12 * years; // exclude opp cost — it's a gain
+  const totalBuyCost = (pi + propTaxMo + insMo + pmi + maintMo) * 12 * years;
+  const buyNetCost = totalBuyCost - (netSaleProceeds - down); // actual cost after selling
+  const rentNetCost = totalRentCost - rentNetGain; // actual cost after investment gains
+
+  const breakEl = document.getElementById('rvb-breakeven');
+  breakEl.innerHTML = `
+    <strong style="color:var(--text);display:block;margin-bottom:6px">📊 ${years}-Year Financial Snapshot</strong>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+      <div><span style="color:var(--teal)">🏢 Renting</span><br>
+        Total rent paid: <strong>${fmtK(totalRentCost)}</strong><br>
+        Down payment grows to: <strong>${fmtK(investedDown)}</strong><br>
+        Net cost (rent − investment gain): <strong>${fmtK(rentNetCost)}</strong>
+      </div>
+      <div><span style="color:var(--orange)">🏠 Buying</span><br>
+        Home value (4% appr.): <strong>${fmtK(futureValue)}</strong><br>
+        Net sale proceeds: <strong>${fmtK(netSaleProceeds)}</strong><br>
+        Net cost (payments − equity): <strong>${fmtK(buyNetCost)}</strong>
+      </div>
+    </div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);color:var(--muted)">
+      * Opportunity cost = down payment invested at 6%/yr. Selling costs = 7% of sale price. Appreciation = 4%/yr.
+    </div>
+  `;
+
+  // Verdict
+  const diff = buyTotal - rentTotal;
+  const verdictEl = document.getElementById('rvb-verdict');
+  let cls, msg;
+  if (bPct > 45) {
+    cls = 'warn';
+    msg = `🚨 <strong>Caution: Buying stretches your budget hard.</strong> At ${bPct}% of take-home, housing would crowd out your Roth IRA, emergency fund, and quality of life. On a resident salary, this is a high-risk move — especially if you might leave Marshfield after residency.`;
+  } else if (bPct > 35) {
+    cls = 'caution';
+    msg = `⚠️ <strong>Buying is doable but tight.</strong> At ${bPct}% of take-home, you'd be above the recommended 30% threshold. You'd likely need to reduce Roth IRA contributions or sinking funds. Consider if you plan to stay in Marshfield long-term before committing.`;
+  } else {
+    cls = 'ok';
+    msg = `✅ <strong>Buying looks financially feasible</strong> at these numbers. Housing is ${bPct}% of take-home — within a manageable range. Key question: will you stay past residency? Selling in 3 years means covering ~7% closing costs.`;
+  }
+  verdictEl.className = 'rvb-verdict ' + cls;
+  verdictEl.innerHTML = msg;
+}
+
+function fmtK(n) {
+  return '$' + Math.round(n).toLocaleString();
+}
+
+recalc();
+rvbCalc();
+</script>
+</body>
+</html>

@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YNAB Residency Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=Epilogue:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --border: #22222e;
+    --text: #f0f0f8;
+    --muted: #6b6b88;
+    --green: #00e5a0;
+    --green-dim: rgba(0,229,160,0.12);
+    --red: #ff4d6a;
+    --red-dim: rgba(255,77,106,0.12);
+    --yellow: #ffd166;
+    --yellow-dim: rgba(255,209,102,0.12);
+    --blue: #4d94ff;
+    --blue-dim: rgba(77,148,255,0.12);
+    --purple: #c084fc;
+    --purple-dim: rgba(192,132,252,0.12);
+    --teal: #06d6c7;
+    --orange: #ff8c42;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Epilogue', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ANIMATED BG GRID */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 16px 80px; }
+
+  /* HEADER */
+  .header {
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .header-eyebrow {
+    font-family: 'Syne Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .header-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: var(--green);
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+  h1 span { color: var(--green); }
+  .header-sub { font-size: 13px; color: var(--muted); font-weight: 300; }
+
+  /* TOKEN INPUT SCREEN */
+  #tokenScreen {
+    margin-top: 40px;
+  }
+  .token-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .token-card::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .token-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .token-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .token-steps {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+  .token-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .token-step:last-child { margin-bottom: 0; }
+  .token-step-num {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px;
+    background: var(--green-dim);
+    color: var(--green);
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .token-step strong { color: var(--text); }
+  .token-input-row {
+    display: flex; gap: 10px;
+  }
+  .token-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Syne Mono', monospace;
+    font-size: 12px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .token-input:focus { border-color: var(--green); }
+  .token-input::placeholder { color: var(--muted); }
+  .btn {
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+  .security-note {
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex; align-items: flex-start; gap: 6px;
+    line-height: 1.5;
+  }
+
+  /* LOADING */
+  #loadingScreen {
+    display: none;
+    text-align: center;
+    padding: 80px 0;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 2px solid var(--border);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: 'Syne Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  /* ERROR */
+  .error-box {
+    background: var(--red-dim);
+    border: 1px solid rgba(255,77,106,0.3);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--red);
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* DASHBOARD */
+  #dashboard { display: none; }
+
+  /* BUDGET SELECTOR */
+  .budget-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .budget-select-wrap { display: flex; align-items: center; gap: 10px; }
+  .budget-select-label { font-size: 12px; color: var(--muted); font-family: 'Syne Mono', monospace; }
+  select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Epilogue', sans-serif;
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    cursor: pointer;
+  }
+  select:focus { border-color: var(--green); }
+  .month-nav { display: flex; align-items: center; gap: 8px; }
+  .month-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    width: 32px; height: 32px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .month-btn:hover { border-color: var(--green); color: var(--green); }
+  .month-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    min-width: 110px;
+    text-align: center;
+  }
+
+  /* KPI STRIP */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .kpi:hover { border-color: var(--green); }
+  .kpi-label {
+    font-family: 'Syne Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(16px, 3vw, 22px);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .kpi-value.pos { color: var(--green); }
+  .kpi-value.neg { color: var(--red); }
+  .kpi-value.warn { color: var(--yellow); }
+  .kpi-value.neu { color: var(--blue); }
+
+  /* SECTION */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-head {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* CATEGORY ROWS */
+  .cat-row {
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .cat-row:last-child { border-bottom: none; }
+  .cat-name { font-size: 13px; }
+  .cat-group { font-size: 10px; color: var(--muted); }
+  .cat-budgeted {
+    font-family: 'Syne Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+  }
+  .cat-activity {
+    font-family: 'Syne Mono', monospace;
+    font-size: 12px;
+    text-align: right;
+    min-width: 70px;
+  }
+  .cat-balance {
+    font-family: 'Syne Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+    min-width: 70px;
+  }
+  .cat-balance.pos { color: var(--green); }
+  .cat-balance.neg { color: var(--red); }
+  .cat-balance.warn { color: var(--yellow); }
+
+  /* PROGRESS BAR IN ROWS */
+  .cat-bar-wrap {
+    grid-column: 1 / -1;
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: -6px;
+    margin-bottom: 2px;
+  }
+  .cat-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  /* SPENDING CHART */
+  .chart-wrap {
+    padding: 20px;
+  }
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label {
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 130px;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-track {
+    flex: 1;
+    height: 20px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-family: 'Syne Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: #000;
+    transition: width 0.5s ease;
+    white-space: nowrap;
+  }
+  .bar-amount {
+    font-family: 'Syne Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    min-width: 65px;
+    text-align: right;
+  }
+
+  /* TRANSACTIONS */
+  .txn-row {
+    padding: 10px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .txn-row:last-child { border-bottom: none; }
+  .txn-date {
+    font-family: 'Syne Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    min-width: 50px;
+  }
+  .txn-payee { font-size: 12px; }
+  .txn-cat { font-size: 10px; color: var(--muted); }
+  .txn-amount {
+    font-family: 'Syne Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+  }
+  .txn-amount.out { color: var(--red); }
+  .txn-amount.in { color: var(--green); }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-family: 'Syne Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .badge-green { background: var(--green-dim); color: var(--green); }
+  .badge-red { background: var(--red-dim); color: var(--red); }
+  .badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
+  .badge-blue { background: var(--blue-dim); color: var(--blue); }
+
+  /* AI INSIGHTS */
+  .insight-box {
+    background: linear-gradient(135deg, var(--surface) 0%, #13131e 100%);
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .insight-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .insight-icon {
+    width: 32px; height: 32px;
+    background: var(--green-dim);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .insight-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--green);
+  }
+  .insight-sub { font-size: 11px; color: var(--muted); }
+  #insightText {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+  .insight-loading {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; color: var(--muted);
+    font-family: 'Syne Mono', monospace;
+  }
+  .dots span {
+    animation: blink 1.2s infinite;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0} 40%{opacity:1} }
+
+  /* DISCONNECT BTN */
+  .disconnect-btn {
+    font-family: 'Syne Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .disconnect-btn:hover { color: var(--red); border-color: var(--red); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    color: var(--muted);
+    background: none;
+  }
+  .tab.active { background: var(--green-dim); color: var(--green); border-color: rgba(0,229,160,0.3); }
+  .tab:hover:not(.active) { color: var(--text); border-color: var(--border); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* EMPTY STATE */
+  .empty { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 580px) {
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .bar-label { min-width: 90px; }
+    .cat-row { grid-template-columns: 1fr auto auto; }
+    .cat-budgeted { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-eyebrow">PGY-1 · Marshfield, WI · July 2026</div>
+    <h1>YNAB <span>Residency</span><br>Dashboard</h1>
+    <div class="header-sub">Live spending · budget tracking · AI insights</div>
+  </div>
+
+  <!-- TOKEN SCREEN -->
+  <div id="tokenScreen">
+    <div class="token-card">
+      <div class="token-title">🔑 Connect Your YNAB Account</div>
+      <div class="token-desc">
+        This dashboard connects directly to your YNAB budget via their free Personal Access Token API — your data never leaves your device. No login, no third-party storage.
+      </div>
+      <div class="token-steps">
+        <div class="token-step">
+          <div class="token-step-num">1</div>
+          <div>Open YNAB → click your <strong>profile icon</strong> (top right) → <strong>Account Settings</strong></div>
+        </div>
+        <div class="token-step">
+          <div class="token-step-num">2</div>
+          <div>Scroll to <strong>Developer Settings</strong> → click <strong>"New Token"</strong> → give it any name (e.g. "Claude Dashboard")</div>
+        </div>
+        <div class="token-step">
+          <div class="token-step-num">3</div>
+          <div>Copy the token and paste it below. <strong>Save it somewhere safe</strong> — YNAB only shows it once!</div>
+        </div>
+      </div>
+      <div class="token-input-row">
+        <input type="password" class="token-input" id="tokenInput" placeholder="Paste your YNAB Personal Access Token here..." />
+        <button class="btn" onclick="connect()">Connect →</button>
+      </div>
+      <div class="error-box" id="tokenError"></div>
+      <div class="security-note">
+        🔒 Your token is saved in this browser's localStorage for convenience and is never sent anywhere except directly to api.youneedabudget.com over HTTPS. Use Disconnect to clear it. Revoke it anytime in YNAB Account Settings.
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loadingScreen">
+    <div class="spinner"></div>
+    <div class="loading-text">CONNECTING TO YNAB<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+
+    <!-- BUDGET BAR -->
+    <div class="budget-bar">
+      <div class="budget-select-wrap">
+        <span class="budget-select-label">BUDGET</span>
+        <select id="budgetSelect" onchange="loadBudgetData()"></select>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="month-nav">
+          <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+          <div class="month-label" id="monthLabel">—</div>
+          <button class="month-btn" onclick="changeMonth(1)">›</button>
+        </div>
+        <button class="disconnect-btn" onclick="disconnect()">✕ Disconnect</button>
+      </div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="kpi-strip">
+      <div class="kpi">
+        <div class="kpi-label">💰 Budgeted</div>
+        <div class="kpi-value neu" id="kpiBudgeted">—</div>
+        <div class="kpi-sub">this month</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">💸 Spent</div>
+        <div class="kpi-value" id="kpiSpent">—</div>
+        <div class="kpi-sub">this month</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">✅ Remaining</div>
+        <div class="kpi-value" id="kpiRemaining">—</div>
+        <div class="kpi-sub">in budget</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">🏦 Ready to Assign</div>
+        <div class="kpi-value" id="kpiRTA">—</div>
+        <div class="kpi-sub">unallocated</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('overview')">📊 Overview</button>
+      <button class="tab" onclick="switchTab('categories')">📂 Categories</button>
+      <button class="tab" onclick="switchTab('transactions')">💳 Transactions</button>
+      <button class="tab" onclick="switchTab('insights')">🤖 AI Insights</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">📊 Spending by Category Group</div>
+        </div>
+        <div class="chart-wrap">
+          <div class="bar-chart" id="overviewChart">
+            <div class="empty">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORIES TAB -->
+    <div class="tab-panel" id="tab-categories">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">📂 All Budget Categories</div>
+          <div style="display:flex;gap:6px">
+            <span class="badge badge-red" style="cursor:pointer" onclick="filterCats('over')">Over Budget</span>
+            <span class="badge badge-green" style="cursor:pointer" onclick="filterCats('all')">All</span>
+          </div>
+        </div>
+        <div id="categoryList"><div class="empty">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS TAB -->
+    <div class="tab-panel" id="tab-transactions">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">💳 Recent Transactions</div>
+          <span id="txnCount" class="badge badge-blue">—</span>
+        </div>
+        <div id="txnList"><div class="empty">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- AI INSIGHTS TAB -->
+    <div class="tab-panel" id="tab-insights">
+      <div class="insight-box">
+        <div class="insight-header">
+          <div class="insight-icon">🤖</div>
+          <div>
+            <div class="insight-title">Claude's Budget Analysis</div>
+            <div class="insight-sub">Personalized insights based on your actual YNAB data</div>
+          </div>
+        </div>
+        <div id="insightText">
+          <div class="insight-loading">
+            Waiting for budget data<span class="dots"><span>.</span><span>.</span><span>.</span></span>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="getInsights()" style="font-size:12px;padding:8px 16px">🔄 Refresh Insights</button>
+          <button class="btn-ghost" onclick="getInsights('debt')" style="font-size:12px">💳 Debt Strategy</button>
+          <button class="btn-ghost" onclick="getInsights('savings')" style="font-size:12px">💰 Savings Tips</button>
+          <button class="btn-ghost" onclick="getInsights('cashflow')" style="font-size:12px">📈 Cash Flow</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /dashboard -->
+
+</div><!-- /app -->
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let token = '';
+let budgets = [];
+let currentBudgetId = '';
+let currentMonth = '';
+let monthData = null;
+let allCategories = [];
+let allTransactions = [];
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const fmt = n => {
+  const abs = Math.abs(n / 1000);
+  return (n < 0 ? '-$' : '$') + abs.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+};
+const fmtShort = n => {
+  const abs = Math.abs(n / 1000);
+  return (n < 0 ? '-$' : '$') + abs.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0});
+};
+
+function ynab(endpoint) {
+  return fetch('https://api.youneedabudget.com/v1' + endpoint, {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }).then(r => r.json());
+}
+
+function initMonth() {
+  const now = new Date();
+  currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+}
+
+function monthDisplay(m) {
+  const [y, mo] = m.split('-');
+  return MONTHS[parseInt(mo)-1] + ' ' + y;
+}
+
+function changeMonth(dir) {
+  const [y, mo] = currentMonth.split('-').map(Number);
+  const d = new Date(y, mo - 1 + dir, 1);
+  currentMonth = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+  $('monthLabel').textContent = monthDisplay(currentMonth);
+  loadBudgetData();
+}
+
+// ─── CONNECT ──────────────────────────────────────────────────────────────────
+async function connect() {
+  token = $('tokenInput').value.trim();
+  if (!token) return;
+  $('tokenError').style.display = 'none';
+  $('tokenScreen').style.display = 'none';
+  $('loadingScreen').style.display = 'block';
+
+  try {
+    const data = await ynab('/budgets');
+    if (data.error) throw new Error(data.error.detail || 'Invalid token');
+    budgets = data.data.budgets;
+    if (!budgets.length) throw new Error('No budgets found');
+
+    // Populate selector
+    const sel = $('budgetSelect');
+    sel.innerHTML = '';
+    budgets.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.id;
+      opt.textContent = b.name;
+      sel.appendChild(opt);
+    });
+    currentBudgetId = budgets[0].id;
+    initMonth();
+    $('monthLabel').textContent = monthDisplay(currentMonth);
+    await loadBudgetData();
+    localStorage.setItem('ynab_token', token);
+    $('loadingScreen').style.display = 'none';
+    $('dashboard').style.display = 'block';
+  } catch(e) {
+    $('loadingScreen').style.display = 'none';
+    $('tokenScreen').style.display = 'block';
+    const err = $('tokenError');
+    err.textContent = '❌ ' + (e.message || 'Connection failed. Check your token and try again.');
+    err.style.display = 'block';
+  }
+}
+
+function disconnect() {
+  token = '';
+  currentBudgetId = '';
+  monthData = null;
+  localStorage.removeItem('ynab_token');
+  $('dashboard').style.display = 'none';
+  $('tokenScreen').style.display = 'block';
+  $('tokenInput').value = '';
+}
+
+// ─── LOAD DATA ────────────────────────────────────────────────────────────────
+async function loadBudgetData() {
+  currentBudgetId = $('budgetSelect').value;
+  try {
+    const [mRes, txnRes] = await Promise.all([
+      ynab(`/budgets/${currentBudgetId}/months/${currentMonth}`),
+      ynab(`/budgets/${currentBudgetId}/transactions?since_date=${currentMonth.substring(0,7)}-01`)
+    ]);
+
+    monthData = mRes.data.month;
+    allCategories = monthData.categories || [];
+    allTransactions = (txnRes.data?.transactions || [])
+      .filter(t => t.date.startsWith(currentMonth.substring(0,7)))
+      .sort((a,b) => b.date.localeCompare(a.date));
+
+    renderKPIs();
+    renderOverview();
+    renderCategories('all');
+    renderTransactions();
+    if ($('tab-insights').classList.contains('active')) getInsights();
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+// ─── KPIs ─────────────────────────────────────────────────────────────────────
+function renderKPIs() {
+  const budgeted = allCategories.reduce((s,c) => s + c.budgeted, 0);
+  const activity = allCategories.reduce((s,c) => s + c.activity, 0);
+  const balance  = allCategories.reduce((s,c) => s + c.balance, 0);
+  const rta      = monthData.to_be_budgeted || 0;
+
+  const spent = activity; // negative = spent
+
+  $('kpiBudgeted').textContent = fmtShort(budgeted);
+  $('kpiSpent').textContent = fmtShort(Math.abs(spent));
+  $('kpiSpent').className = 'kpi-value ' + (Math.abs(spent) > budgeted ? 'neg' : 'warn');
+  $('kpiRemaining').textContent = fmtShort(balance);
+  $('kpiRemaining').className = 'kpi-value ' + (balance >= 0 ? 'pos' : 'neg');
+  $('kpiRTA').textContent = fmtShort(rta);
+  $('kpiRTA').className = 'kpi-value ' + (rta > 0 ? 'pos' : rta < 0 ? 'neg' : 'neu');
+}
+
+// ─── OVERVIEW CHART ───────────────────────────────────────────────────────────
+function renderOverview() {
+  // group by category group name (use category_group_name from YNAB or approximate)
+  const groups = {};
+  allCategories.forEach(c => {
+    if (!c.category_group_name || c.hidden || c.deleted) return;
+    const g = c.category_group_name;
+    if (!groups[g]) groups[g] = { budgeted: 0, spent: 0 };
+    groups[g].budgeted += c.budgeted;
+    groups[g].spent += Math.abs(c.activity);
+  });
+
+  const sorted = Object.entries(groups)
+    .filter(([,v]) => v.spent > 0 || v.budgeted > 0)
+    .sort(([,a],[,b]) => b.spent - a.spent)
+    .slice(0, 10);
+
+  if (!sorted.length) { $('overviewChart').innerHTML = '<div class="empty">No spending data this month</div>'; return; }
+
+  const maxVal = Math.max(...sorted.map(([,v]) => Math.max(v.budgeted, v.spent)));
+
+  const COLORS = ['#00e5a0','#4d94ff','#ffd166','#ff8c42','#c084fc','#06d6c7','#ff4d6a','#a3e635','#e879f9','#67e8f9'];
+
+  $('overviewChart').innerHTML = sorted.map(([name, v], i) => {
+    const pctSpent = maxVal > 0 ? (v.spent / maxVal * 100) : 0;
+    const pctBudgeted = maxVal > 0 ? (v.budgeted / maxVal * 100) : 0;
+    const over = v.spent > v.budgeted && v.budgeted > 0;
+    const color = over ? '#ff4d6a' : COLORS[i % COLORS.length];
+    return `
+      <div class="bar-row">
+        <div class="bar-label" title="${name}">${name}</div>
+        <div class="bar-track" style="position:relative">
+          <div class="bar-fill" style="width:${pctSpent}%;background:${color};min-width:${v.spent>0?'4px':'0'}">
+            ${pctSpent > 20 ? fmtShort(v.spent) : ''}
+          </div>
+          ${v.budgeted > 0 ? `<div style="position:absolute;top:0;left:0;width:${pctBudgeted}%;height:100%;border-right:2px dashed rgba(255,255,255,0.3);pointer-events:none"></div>` : ''}
+        </div>
+        <div class="bar-amount">${fmtShort(v.spent)}</div>
+      </div>`;
+  }).join('');
+}
+
+// ─── CATEGORIES ───────────────────────────────────────────────────────────────
+function filterCats(mode) {
+  renderCategories(mode);
+}
+
+function renderCategories(mode = 'all') {
+  let cats = allCategories.filter(c => !c.hidden && !c.deleted && c.budgeted !== 0);
+  if (mode === 'over') cats = cats.filter(c => c.balance < 0);
+  cats.sort((a,b) => a.balance - b.balance);
+
+  if (!cats.length) {
+    $('categoryList').innerHTML = `<div class="empty">${mode === 'over' ? '🎉 Nothing over budget!' : 'No categories found'}</div>`;
+    return;
+  }
+
+  $('categoryList').innerHTML = cats.map(c => {
+    const pct = c.budgeted > 0 ? Math.min(100, Math.abs(c.activity) / c.budgeted * 100) : 0;
+    const over = c.balance < 0;
+    const warn = !over && pct > 80;
+    const balClass = over ? 'neg' : warn ? 'warn' : 'pos';
+    const barColor = over ? '#ff4d6a' : warn ? '#ffd166' : '#00e5a0';
+    return `
+      <div class="cat-row">
+        <div>
+          <div class="cat-name">${c.name}</div>
+          <div class="cat-group">${c.category_group_name || ''}</div>
+        </div>
+        <div class="cat-budgeted">${fmt(c.budgeted)}</div>
+        <div class="cat-activity" style="color:${c.activity < 0 ? 'var(--red)' : 'var(--muted)'}">${fmt(c.activity)}</div>
+        <div class="cat-balance ${balClass}">${fmt(c.balance)}</div>
+        <div class="cat-bar-wrap">
+          <div class="cat-bar-fill" style="width:${pct}%;background:${barColor}"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─── TRANSACTIONS ─────────────────────────────────────────────────────────────
+function renderTransactions() {
+  const recent = allTransactions.slice(0, 40);
+  $('txnCount').textContent = allTransactions.length + ' txns';
+
+  if (!recent.length) { $('txnList').innerHTML = '<div class="empty">No transactions this month</div>'; return; }
+
+  $('txnList').innerHTML = recent.map(t => {
+    const amt = t.amount;
+    const amtClass = amt < 0 ? 'out' : 'in';
+    const [,mo,dy] = t.date.split('-');
+    return `
+      <div class="txn-row">
+        <div class="txn-date">${mo}/${dy}</div>
+        <div>
+          <div class="txn-payee">${t.payee_name || 'Unknown'}</div>
+          <div class="txn-cat">${t.category_name || 'Uncategorized'}</div>
+        </div>
+        <div class="txn-amount ${amtClass}">${fmt(amt)}</div>
+      </div>`;
+  }).join('');
+}
+
+// ─── AI INSIGHTS ──────────────────────────────────────────────────────────────
+async function getInsights(focus = 'general') {
+  if (!monthData) return;
+  switchTab('insights');
+
+  $('insightText').innerHTML = '<div class="insight-loading">Analyzing your budget<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>';
+
+  // Build summary for Claude
+  const budgeted = allCategories.reduce((s,c) => s + c.budgeted, 0);
+  const spent    = allCategories.reduce((s,c) => s + Math.abs(c.activity), 0);
+  const balance  = allCategories.reduce((s,c) => s + c.balance, 0);
+  const rta      = monthData.to_be_budgeted || 0;
+  const overBudget = allCategories.filter(c => c.balance < 0 && !c.hidden && !c.deleted);
+  const topSpend = allCategories
+    .filter(c => c.activity < 0 && !c.hidden && !c.deleted)
+    .sort((a,b) => a.activity - b.activity)
+    .slice(0, 8);
+
+  const systemPrompt = `You are a financial advisor embedded in a YNAB budget dashboard for a PGY-1 internal medicine resident at Marshfield Medical Center, Wisconsin. They earn $71,000/year. Their fixed monthly obligations include: $1,300 rent, $750 Advia loan, $250 Walgreens loan, $187 401k loan repayment, $240 laser hair removal (ends Dec 2026). They contribute 6% to a 401k (employer matches 5%), and plan to resume $583/mo Roth IRA contributions in Jan 2027. They have ~$127,915 invested. Their goal is derm residency after IM. Be direct, practical, and specific. No fluff. Use plain text, no markdown.`;
+
+  const focusPrompts = {
+    general: 'Give a concise 3-4 paragraph analysis of their spending this month. Highlight what looks good, what looks concerning, and 2-3 specific actionable steps.',
+    debt: 'Focus specifically on their debt situation ($750 Advia + $250 Walgreens + $187 401k loan). Analyze their payoff strategy, suggest optimizations, and flag the 401k loan risk when they leave for derm.',
+    savings: 'Focus on savings and investment opportunities. With their income and expenses, what can they realistically save? How should they prioritize emergency fund vs Roth IRA vs other goals?',
+    cashflow: 'Analyze their monthly cash flow specifically. What is their actual monthly surplus or deficit? What categories are causing cash flow problems?'
+  };
+
+  const userMsg = `YNAB Budget Data for ${monthDisplay(currentMonth)}:
+- Total budgeted: ${fmtShort(budgeted)}
+- Total spent: ${fmtShort(spent)}
+- Remaining balance: ${fmtShort(balance)}  
+- Ready to Assign: ${fmtShort(rta)}
+
+Categories OVER budget (${overBudget.length}):
+${overBudget.map(c => `  ${c.name}: over by ${fmtShort(Math.abs(c.balance))}`).join('\n') || '  None'}
+
+Top spending categories:
+${topSpend.map(c => `  ${c.name}: ${fmtShort(Math.abs(c.activity))} (budgeted ${fmtShort(c.budgeted)})`).join('\n')}
+
+${focusPrompts[focus]}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMsg }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(b => b.text || '').join('') || 'Unable to generate insights.';
+    $('insightText').textContent = text;
+  } catch(e) {
+    $('insightText').textContent = 'Unable to connect to Claude API for insights. Your YNAB data is still loading correctly above.';
+  }
+}
+
+// ─── AUTO-LOAD SAVED TOKEN ────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('ynab_token');
+  if (saved) {
+    $('tokenInput').value = saved;
+    connect();
+  }
+});
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['overview','categories','transactions','insights'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-' + name);
+  });
+  if (name === 'insights' && monthData) getInsights();
+}
+</script>
+</body>
+</html>
