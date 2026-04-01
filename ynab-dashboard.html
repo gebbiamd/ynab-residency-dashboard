@@ -501,10 +501,40 @@
   .insight-sub { font-size: 11px; color: var(--muted); }
   #insightText {
     font-size: 13px;
-    line-height: 1.75;
+    line-height: 1.7;
     color: var(--text);
-    white-space: pre-wrap;
   }
+  #insightText h3 {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+    margin: 18px 0 8px; color: var(--green); letter-spacing: 1px; text-transform: uppercase;
+  }
+  #insightText h3:first-child { margin-top: 0; }
+  #insightText table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+  #insightText th {
+    text-align: left; padding: 6px 10px;
+    background: var(--surface2); color: var(--muted);
+    font-family: 'Syne Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  #insightText td { padding: 7px 10px; border-bottom: 1px solid rgba(34,34,46,0.6); vertical-align: middle; }
+  #insightText tr:last-child td { border-bottom: none; }
+  #insightText .bar-wrap { background: var(--surface2); border-radius: 4px; height: 5px; overflow: hidden; margin-top: 5px; min-width: 60px; }
+  #insightText .bar { height: 100%; border-radius: 4px; }
+  #insightText ul { padding-left: 18px; margin: 6px 0; }
+  #insightText li { margin-bottom: 5px; }
+  #insightText p { margin: 6px 0; }
+  .focus-tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+  .focus-tab {
+    padding: 6px 14px; border-radius: 6px;
+    font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border); background: none; color: var(--muted);
+    transition: all 0.15s;
+  }
+  .focus-tab.active { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+  .focus-tab:hover:not(.active) { color: var(--text); border-color: rgba(240,240,248,0.3); }
+  .insight-empty { text-align: center; padding: 32px 16px; color: var(--muted); font-size: 13px; }
+  .insight-empty .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .insight-empty p { font-size: 12px; margin-top: 6px; }
   .insight-loading {
     display: flex; align-items: center; gap: 10px;
     font-size: 12px; color: var(--muted);
@@ -712,17 +742,20 @@
             <div class="insight-sub">Personalized insights based on your actual YNAB data</div>
           </div>
         </div>
+        <div class="focus-tabs">
+          <button class="focus-tab active" id="ftab-general" onclick="switchFocus('general')">📊 General</button>
+          <button class="focus-tab" id="ftab-debt" onclick="switchFocus('debt')">💳 Debt</button>
+          <button class="focus-tab" id="ftab-savings" onclick="switchFocus('savings')">💰 Savings</button>
+          <button class="focus-tab" id="ftab-cashflow" onclick="switchFocus('cashflow')">📈 Cash Flow</button>
+        </div>
         <div id="insightText">
           <div class="insight-loading">
             Waiting for budget data<span class="dots"><span>.</span><span>.</span><span>.</span></span>
           </div>
         </div>
         <div id="insightMeta" style="font-size:11px;color:var(--muted);margin-top:8px;font-family:'Syne Mono',monospace"></div>
-        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" onclick="getInsights('general', true)" style="font-size:12px;padding:8px 16px">🔄 Refresh Insights</button>
-          <button class="btn-ghost" onclick="getInsights('debt', false)" style="font-size:12px">💳 Debt Strategy</button>
-          <button class="btn-ghost" onclick="getInsights('savings', false)" style="font-size:12px">💰 Savings Tips</button>
-          <button class="btn-ghost" onclick="getInsights('cashflow', false)" style="font-size:12px">📈 Cash Flow</button>
+        <div style="margin-top:16px">
+          <button class="btn" id="generateBtn" onclick="getInsights()" style="font-size:12px;padding:8px 20px">✨ Generate Analysis</button>
         </div>
       </div>
     </div>
@@ -740,6 +773,7 @@ let currentMonth = '';
 let monthData = null;
 let allCategories = [];
 let allTransactions = [];
+let currentFocus = 'general';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -851,7 +885,7 @@ async function loadBudgetData() {
     renderOverview();
     renderCategories('all');
     renderTransactions();
-    if ($('tab-insights').classList.contains('active')) getInsights(undefined, false);
+    if ($('tab-insights').classList.contains('active')) switchFocus(currentFocus);
   } catch(e) {
     console.error(e);
   }
@@ -978,55 +1012,78 @@ function renderTransactions() {
 }
 
 // ─── AI INSIGHTS ──────────────────────────────────────────────────────────────
-async function getInsights(focus = 'general', forceRefresh = true) {
-  if (!monthData) return;
+function switchFocus(focus) {
+  currentFocus = focus;
+  document.querySelectorAll('.focus-tab').forEach(t => t.classList.remove('active'));
+  $('ftab-' + focus).classList.add('active');
 
   const cacheKey = `ynab_insight_${currentBudgetId}_${currentMonth}_${focus}`;
-  if (!forceRefresh) {
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      const { text, ts } = JSON.parse(cached);
-      const date = new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-      $('insightText').textContent = text;
-      $('insightMeta').textContent = `Last generated ${date} — click Refresh to update`;
-      return;
-    }
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    const { html, ts } = JSON.parse(cached);
+    const date = new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    $('insightText').innerHTML = html;
+    $('insightMeta').textContent = `Generated ${date} — cached`;
+    $('generateBtn').textContent = '🔄 Refresh';
+  } else {
+    const labels = { general: 'General Analysis', debt: 'Debt Strategy', savings: 'Savings Plan', cashflow: 'Cash Flow' };
+    $('insightText').innerHTML = `<div class="insight-empty"><div class="empty-icon">✨</div><strong>${labels[focus]}</strong><p>No analysis yet for this view. Hit Generate to run it.</p></div>`;
+    $('insightMeta').textContent = '';
+    $('generateBtn').textContent = '✨ Generate Analysis';
   }
+}
+
+async function getInsights() {
+  if (!monthData) return;
+  const focus = currentFocus;
+  const cacheKey = `ynab_insight_${currentBudgetId}_${currentMonth}_${focus}`;
 
   $('insightMeta').textContent = '';
+  $('generateBtn').disabled = true;
+  $('generateBtn').textContent = '⏳ Analyzing...';
   $('insightText').innerHTML = '<div class="insight-loading">Analyzing your budget<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>';
 
-  // Build summary for Claude
   const budgeted = allCategories.reduce((s,c) => s + c.budgeted, 0);
   const spent    = allCategories.reduce((s,c) => s + Math.abs(c.activity), 0);
-  const balance  = allCategories.reduce((s,c) => s + c.balance, 0);
   const rta      = monthData.to_be_budgeted || 0;
   const overBudget = allCategories.filter(c => c.balance < 0 && !c.hidden && !c.deleted);
   const topSpend = allCategories
     .filter(c => c.activity < 0 && !c.hidden && !c.deleted)
     .sort((a,b) => a.activity - b.activity)
-    .slice(0, 8);
+    .slice(0, 10);
 
-  const systemPrompt = `You are a financial advisor embedded in a YNAB budget dashboard for a PGY-1 internal medicine resident at Marshfield Medical Center, Wisconsin. They earn $71,000/year. Their fixed monthly obligations include: $1,300 rent, $750 Advia loan, $250 Walgreens loan, $187 401k loan repayment, $240 laser hair removal (ends Dec 2026). They contribute 6% to a 401k (employer matches 5%), and plan to resume $583/mo Roth IRA contributions in Jan 2027. They have ~$127,915 invested. Their goal is derm residency after IM. Be direct, practical, and specific. No fluff. Use plain text, no markdown.`;
+  const systemPrompt = `You are a financial advisor in a YNAB budget dashboard. The user is a PGY-1 IM resident at Marshfield Clinic, WI. Salary: $71k/yr gross (~$4,850/mo take-home). Monthly fixed: $1,300 rent, $750 Advia loan, $250 Walgreens loan, $187 401k loan repayment, $240 laser hair removal (ends Dec 2026). Contributes 6% to 401k (5% employer match). Resuming $583/mo Roth IRA Jan 2027. ~$127,915 invested. Goal: derm residency after IM. Be direct, specific, no fluff.
+
+CRITICAL: Respond with ONLY valid HTML — no markdown, no code fences, no plain text outside tags. Use these exact CSS variables for inline styles: --green:#00e5a0, --red:#ff4d6a, --yellow:#ffd166, --blue:#4d94ff, --muted:#6b6b88, --surface2:#18181f, --border:#22222e. Use <h3> for section headers, <table> for comparisons, <span style="color:#00e5a0"> for positive values, <span style="color:#ff4d6a"> for negative/over-budget, <span style="color:#ffd166"> for warnings. Include emoji in headers. For spend bars use: <div class="bar-wrap"><div class="bar" style="width:X%;background:#COLOR"></div></div>.`;
 
   const focusPrompts = {
-    general: 'Give a concise 3-4 paragraph analysis of their spending this month. Highlight what looks good, what looks concerning, and 2-3 specific actionable steps.',
-    debt: 'Focus specifically on their debt situation ($750 Advia + $250 Walgreens + $187 401k loan). Analyze their payoff strategy, suggest optimizations, and flag the 401k loan risk when they leave for derm.',
-    savings: 'Focus on savings and investment opportunities. With their income and expenses, what can they realistically save? How should they prioritize emergency fund vs Roth IRA vs other goals?',
-    cashflow: 'Analyze their monthly cash flow specifically. What is their actual monthly surplus or deficit? What categories are causing cash flow problems?'
+    general: `Produce 4 HTML sections:
+<h3>📊 Month at a Glance</h3> — 1-2 sentence summary with colored spend total and surplus/deficit.
+<h3>📋 Spending Breakdown</h3> — table with columns: Category | Budgeted | Spent | Remaining | a mini bar showing % used (color green if under, red if over).
+<h3>✅ Wins & ⚠️ Watch Out</h3> — 2 columns or two short lists: what's on track (green) vs what's concerning (red/yellow).
+<h3>🎯 This Month's Action Items</h3> — exactly 3 numbered, specific, dollar-amount action steps.`,
+    debt: `Produce 3 HTML sections:
+<h3>💳 Debt Snapshot</h3> — table: Debt | Balance | Monthly Payment | Est. Payoff. Include Advia ($750/mo), Walgreens ($250/mo), 401k loan ($187/mo). Add a note about 401k loan risk when leaving for derm fellowship.
+<h3>📉 Payoff Strategy</h3> — avalanche vs snowball recommendation with specific numbers. Which to hit first and why.
+<h3>🎯 Action Items</h3> — 3 specific steps with dollar amounts.`,
+    savings: `Produce 3 HTML sections:
+<h3>💰 Savings Capacity</h3> — table showing: Income | Fixed Expenses | Variable Spending | Available to Save. Color-code the surplus.
+<h3>📈 Priority Stack</h3> — ordered list of savings priorities (emergency fund → 401k → Roth IRA → etc.) with recommended monthly amounts and current status.
+<h3>🎯 Action Items</h3> — 3 specific steps with dollar amounts and timelines.`,
+    cashflow: `Produce 3 HTML sections:
+<h3>💸 Cash Flow Summary</h3> — table: Income vs all spending categories, net surplus/deficit in large colored text.
+<h3>🔴 Problem Categories</h3> — list categories causing cash flow issues with red highlighting and specific amounts over.
+<h3>🎯 Action Items</h3> — 3 steps to improve cash flow with specific dollar amounts.`
   };
 
-  const userMsg = `YNAB Budget Data for ${monthDisplay(currentMonth)}:
-- Total budgeted: ${fmtShort(budgeted)}
-- Total spent: ${fmtShort(spent)}
-- Remaining balance: ${fmtShort(balance)}  
-- Ready to Assign: ${fmtShort(rta)}
+  const userMsg = `YNAB Data for ${monthDisplay(currentMonth)}:
+Total budgeted: ${fmtShort(budgeted)} | Total spent: ${fmtShort(spent)} | Ready to Assign: ${fmtShort(rta)}
 
-Categories OVER budget (${overBudget.length}):
-${overBudget.map(c => `  ${c.name}: over by ${fmtShort(Math.abs(c.balance))}`).join('\n') || '  None'}
+Over-budget categories (${overBudget.length}):
+${overBudget.map(c => `${c.name}: over by ${fmtShort(Math.abs(c.balance))}`).join('\n') || 'None'}
 
-Top spending categories:
-${topSpend.map(c => `  ${c.name}: ${fmtShort(Math.abs(c.activity))} (budgeted ${fmtShort(c.budgeted)})`).join('\n')}
+All spending categories:
+${topSpend.map(c => `${c.name}: spent ${fmtShort(Math.abs(c.activity))} of ${fmtShort(c.budgeted)} budgeted (${Math.round(Math.abs(c.activity)/c.budgeted*100)}% used)`).join('\n')}
 
 ${focusPrompts[focus]}`;
 
@@ -1035,20 +1092,23 @@ ${focusPrompts[focus]}`;
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 900,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMsg }]
       })
     });
     const data = await res.json();
-    const text = data.content?.map(b => b.text || '').join('') || 'Unable to generate insights.';
-    $('insightText').textContent = text;
-    localStorage.setItem(cacheKey, JSON.stringify({ text, ts: Date.now() }));
+    const html = data.content?.map(b => b.text || '').join('') || '<p>Unable to generate insights.</p>';
+    $('insightText').innerHTML = html;
+    localStorage.setItem(cacheKey, JSON.stringify({ html, ts: Date.now() }));
     const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
     $('insightMeta').textContent = `Generated ${date}`;
+    $('generateBtn').textContent = '🔄 Refresh';
   } catch(e) {
-    $('insightText').textContent = 'Unable to connect to Claude API for insights. Your YNAB data is still loading correctly above.';
+    $('insightText').innerHTML = '<p style="color:var(--red)">Unable to connect. Check your connection and try again.</p>';
+  } finally {
+    $('generateBtn').disabled = false;
   }
 }
 
@@ -1070,7 +1130,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => {
     p.classList.toggle('active', p.id === 'tab-' + name);
   });
-  if (name === 'insights' && monthData) getInsights('general', false);
+  if (name === 'insights' && monthData) switchFocus(currentFocus);
 }
 </script>
 </body>
