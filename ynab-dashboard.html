@@ -980,7 +980,6 @@ function renderTransactions() {
 // ─── AI INSIGHTS ──────────────────────────────────────────────────────────────
 async function getInsights(focus = 'general', forceRefresh = true) {
   if (!monthData) return;
-  switchTab('insights');
 
   const cacheKey = `ynab_insight_${currentBudgetId}_${currentMonth}_${focus}`;
   if (!forceRefresh) {
@@ -1071,7 +1070,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => {
     p.classList.toggle('active', p.id === 'tab-' + name);
   });
-  if (name === 'insights' && monthData) getInsights();
+  if (name === 'insights' && monthData) getInsights('general', false);
 }
 </script>
 </body>
