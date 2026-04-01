@@ -796,7 +796,10 @@ function ynab(endpoint) {
 
 function initMonth() {
   const now = new Date();
-  currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+  // Default to previous month if early in the month (day <= 5) — current month has too little data
+  const usePrev = now.getDate() <= 5;
+  const d = usePrev ? new Date(now.getFullYear(), now.getMonth() - 1, 1) : now;
+  currentMonth = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
 }
 
 function monthDisplay(m) {
@@ -1054,7 +1057,7 @@ async function getInsights() {
 
   const systemPrompt = `You are a financial advisor in a YNAB budget dashboard. The user is a PGY-1 IM resident at Marshfield Clinic, WI. Salary: $71k/yr gross (~$4,850/mo take-home). Monthly fixed: $1,300 rent, $750 Advia loan, $250 Walgreens loan, $187 401k loan repayment, $240 laser hair removal (ends Dec 2026). Contributes 6% to 401k (5% employer match). Resuming $583/mo Roth IRA Jan 2027. ~$127,915 invested. Goal: derm residency after IM. Be direct, specific, no fluff.
 
-CRITICAL: Respond with ONLY valid HTML — no markdown, no code fences, no plain text outside tags. Use these exact CSS variables for inline styles: --green:#00e5a0, --red:#ff4d6a, --yellow:#ffd166, --blue:#4d94ff, --muted:#6b6b88, --surface2:#18181f, --border:#22222e. Use <h3> for section headers, <table> for comparisons, <span style="color:#00e5a0"> for positive values, <span style="color:#ff4d6a"> for negative/over-budget, <span style="color:#ffd166"> for warnings. Include emoji in headers. For spend bars use: <div class="bar-wrap"><div class="bar" style="width:X%;background:#COLOR"></div></div>.`;
+CRITICAL: Respond with ONLY valid HTML. Do NOT use markdown. Do NOT wrap in \`\`\`html or any code fences. Your entire response must start with an HTML tag like <h3> and contain nothing else outside of HTML tags. Use these exact CSS variables for inline styles: --green:#00e5a0, --red:#ff4d6a, --yellow:#ffd166, --blue:#4d94ff, --muted:#6b6b88, --surface2:#18181f, --border:#22222e. Use <h3> for section headers, <table> for comparisons, <span style="color:#00e5a0"> for positive values, <span style="color:#ff4d6a"> for negative/over-budget, <span style="color:#ffd166"> for warnings. Include emoji in headers. For spend bars use: <div class="bar-wrap"><div class="bar" style="width:X%;background:#COLOR"></div></div>.`;
 
   const focusPrompts = {
     general: `Produce 4 HTML sections:
@@ -1099,7 +1102,8 @@ ${focusPrompts[focus]}`;
       })
     });
     const data = await res.json();
-    const html = data.content?.map(b => b.text || '').join('') || '<p>Unable to generate insights.</p>';
+    const raw = data.content?.map(b => b.text || '').join('') || '<p>Unable to generate insights.</p>';
+    const html = raw.replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/,'').trim();
     $('insightText').innerHTML = html;
     localStorage.setItem(cacheKey, JSON.stringify({ html, ts: Date.now() }));
     const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
