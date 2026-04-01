@@ -1013,7 +1013,7 @@ ${topSpend.map(c => `  ${c.name}: ${fmtShort(Math.abs(c.activity))} (budgeted ${
 ${focusPrompts[focus]}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://fuobbnjqvdltxcmczwft.supabase.co/functions/v1/claude-proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
