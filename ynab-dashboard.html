@@ -796,10 +796,7 @@ function ynab(endpoint) {
 
 function initMonth() {
   const now = new Date();
-  // Default to previous month if early in the month (day <= 5) — current month has too little data
-  const usePrev = now.getDate() <= 5;
-  const d = usePrev ? new Date(now.getFullYear(), now.getMonth() - 1, 1) : now;
-  currentMonth = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+  currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
 }
 
 function monthDisplay(m) {
@@ -1055,6 +1052,25 @@ async function getInsights() {
     .sort((a,b) => a.activity - b.activity)
     .slice(0, 10);
 
+  // Fetch previous month for comparison
+  const [py, pm] = currentMonth.split('-').map(Number);
+  const prevDate = new Date(py, pm - 2, 1);
+  const prevMonth = `${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}-01`;
+  let prevSummary = '';
+  try {
+    const prevRes = await ynab(`/budgets/${currentBudgetId}/months/${prevMonth}`);
+    const prevCats = prevRes.data?.month?.categories || [];
+    const prevSpent = prevCats.reduce((s,c) => s + Math.abs(c.activity), 0);
+    const prevBudgeted = prevCats.reduce((s,c) => s + c.budgeted, 0);
+    const prevTop = prevCats
+      .filter(c => c.activity < 0 && !c.hidden && !c.deleted)
+      .sort((a,b) => a.activity - b.activity)
+      .slice(0, 10);
+    prevSummary = `\n\n${monthDisplay(prevMonth)} (last month) for comparison:
+Total spent: ${fmtShort(prevSpent)} of ${fmtShort(prevBudgeted)} budgeted
+Categories: ${prevTop.map(c => `${c.name}: ${fmtShort(Math.abs(c.activity))}`).join(', ')}`;
+  } catch(e) { /* silently skip if prev month unavailable */ }
+
   const systemPrompt = `You are a financial advisor in a YNAB budget dashboard. The user is a PGY-1 IM resident at Marshfield Clinic, WI. Salary: $71k/yr gross (~$4,850/mo take-home). Monthly fixed: $1,300 rent, $750 Advia loan, $250 Walgreens loan, $187 401k loan repayment, $240 laser hair removal (ends Dec 2026). Contributes 6% to 401k (5% employer match). Resuming $583/mo Roth IRA Jan 2027. ~$127,915 invested. Goal: derm residency after IM. Be direct, specific, no fluff.
 
 CRITICAL: Respond with ONLY valid HTML. Do NOT use markdown. Do NOT wrap in \`\`\`html or any code fences. Your entire response must start with an HTML tag like <h3> and contain nothing else outside of HTML tags. Use these exact CSS variables for inline styles: --green:#00e5a0, --red:#ff4d6a, --yellow:#ffd166, --blue:#4d94ff, --muted:#6b6b88, --surface2:#18181f, --border:#22222e. Use <h3> for section headers, <table> for comparisons, <span style="color:#00e5a0"> for positive values, <span style="color:#ff4d6a"> for negative/over-budget, <span style="color:#ffd166"> for warnings. Include emoji in headers. For spend bars use: <div class="bar-wrap"><div class="bar" style="width:X%;background:#COLOR"></div></div>.`;
@@ -1086,7 +1102,7 @@ Over-budget categories (${overBudget.length}):
 ${overBudget.map(c => `${c.name}: over by ${fmtShort(Math.abs(c.balance))}`).join('\n') || 'None'}
 
 All spending categories:
-${topSpend.map(c => `${c.name}: spent ${fmtShort(Math.abs(c.activity))} of ${fmtShort(c.budgeted)} budgeted (${Math.round(Math.abs(c.activity)/c.budgeted*100)}% used)`).join('\n')}
+${topSpend.map(c => `${c.name}: spent ${fmtShort(Math.abs(c.activity))} of ${fmtShort(c.budgeted)} budgeted (${Math.round(Math.abs(c.activity)/c.budgeted*100)}% used)`).join('\n')}${prevSummary}
 
 ${focusPrompts[focus]}`;
 
