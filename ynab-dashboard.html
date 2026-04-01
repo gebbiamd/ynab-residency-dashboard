@@ -717,11 +717,12 @@
             Waiting for budget data<span class="dots"><span>.</span><span>.</span><span>.</span></span>
           </div>
         </div>
+        <div id="insightMeta" style="font-size:11px;color:var(--muted);margin-top:8px;font-family:'Syne Mono',monospace"></div>
         <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" onclick="getInsights()" style="font-size:12px;padding:8px 16px">🔄 Refresh Insights</button>
-          <button class="btn-ghost" onclick="getInsights('debt')" style="font-size:12px">💳 Debt Strategy</button>
-          <button class="btn-ghost" onclick="getInsights('savings')" style="font-size:12px">💰 Savings Tips</button>
-          <button class="btn-ghost" onclick="getInsights('cashflow')" style="font-size:12px">📈 Cash Flow</button>
+          <button class="btn" onclick="getInsights('general', true)" style="font-size:12px;padding:8px 16px">🔄 Refresh Insights</button>
+          <button class="btn-ghost" onclick="getInsights('debt', false)" style="font-size:12px">💳 Debt Strategy</button>
+          <button class="btn-ghost" onclick="getInsights('savings', false)" style="font-size:12px">💰 Savings Tips</button>
+          <button class="btn-ghost" onclick="getInsights('cashflow', false)" style="font-size:12px">📈 Cash Flow</button>
         </div>
       </div>
     </div>
@@ -800,7 +801,11 @@ async function connect() {
       opt.textContent = b.name;
       sel.appendChild(opt);
     });
-    currentBudgetId = budgets[0].id;
+    // Restore last-used budget if available
+    const savedBudget = localStorage.getItem('ynab_budget');
+    const matchedBudget = budgets.find(b => b.id === savedBudget);
+    currentBudgetId = matchedBudget ? matchedBudget.id : budgets[0].id;
+    $('budgetSelect').value = currentBudgetId;
     initMonth();
     $('monthLabel').textContent = monthDisplay(currentMonth);
     await loadBudgetData();
@@ -841,11 +846,12 @@ async function loadBudgetData() {
       .filter(t => t.date.startsWith(currentMonth.substring(0,7)))
       .sort((a,b) => b.date.localeCompare(a.date));
 
+    localStorage.setItem('ynab_budget', currentBudgetId);
     renderKPIs();
     renderOverview();
     renderCategories('all');
     renderTransactions();
-    if ($('tab-insights').classList.contains('active')) getInsights();
+    if ($('tab-insights').classList.contains('active')) getInsights(undefined, false);
   } catch(e) {
     console.error(e);
   }
@@ -972,10 +978,23 @@ function renderTransactions() {
 }
 
 // ─── AI INSIGHTS ──────────────────────────────────────────────────────────────
-async function getInsights(focus = 'general') {
+async function getInsights(focus = 'general', forceRefresh = true) {
   if (!monthData) return;
   switchTab('insights');
 
+  const cacheKey = `ynab_insight_${currentBudgetId}_${currentMonth}_${focus}`;
+  if (!forceRefresh) {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      const { text, ts } = JSON.parse(cached);
+      const date = new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      $('insightText').textContent = text;
+      $('insightMeta').textContent = `Last generated ${date} — click Refresh to update`;
+      return;
+    }
+  }
+
+  $('insightMeta').textContent = '';
   $('insightText').innerHTML = '<div class="insight-loading">Analyzing your budget<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>';
 
   // Build summary for Claude
@@ -1026,6 +1045,9 @@ ${focusPrompts[focus]}`;
     const data = await res.json();
     const text = data.content?.map(b => b.text || '').join('') || 'Unable to generate insights.';
     $('insightText').textContent = text;
+    localStorage.setItem(cacheKey, JSON.stringify({ text, ts: Date.now() }));
+    const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    $('insightMeta').textContent = `Generated ${date}`;
   } catch(e) {
     $('insightText').textContent = 'Unable to connect to Claude API for insights. Your YNAB data is still loading correctly above.';
   }
